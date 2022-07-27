@@ -3,17 +3,34 @@ import { useEffect, useState } from 'react'
 import AppLayout from '@/components/Layouts/AppLayout'
 import Head from 'next/head'
 import axios from '@/lib/axios'
+import BookForm from '@/components/books/form'
 
 const BookPage = () => {
     const [books, setBooks] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
 
     const fetchBooks = async () => {
-        const { data } = await axios.get('http://localhost:8000/api/books')
-        setBooks(data.data)
+        try {
+            setLoading(true)
+            const { data } = await axios.get('http://localhost:8000/api/books')
+            setBooks(data.data)
+        } catch (error) {
+            setError(error.message)
+        } finally {
+            setLoading(false)
+        }
     }
     useEffect(() => {
         fetchBooks()
     }, [])
+
+    const handleAddBook = ({ book }) => {
+        setBooks(prev => [...prev, book])
+    }
+
+    if (error) return error
+
     return (
         <AppLayout
             header={
@@ -29,11 +46,14 @@ const BookPage = () => {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white border-b border-gray-200">
-                            {books.map(book => (
-                                <p key={book.id}>
-                                    {book.id} | {book.name}
-                                </p>
-                            ))}
+                            <BookForm handleAddBook={handleAddBook} />
+                            {loading
+                                ? 'Loading...'
+                                : books.map(book => (
+                                      <p key={book.id}>
+                                          {book.id} | {book.name}
+                                      </p>
+                                  ))}
                         </div>
                     </div>
                 </div>

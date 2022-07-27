@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BookResource;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\BookResource;
+use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
@@ -38,7 +40,18 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'name' => 'required|min:4',
+            'description' => 'required|min:10|max:1000',
+            'price' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError("Validation Error", $validator->errors());
+        }
+        $book  = Book::create($input);
+
+        return $this->sendResponse(new BookResource($book), "Input Book created successfully");
     }
 
     /**
