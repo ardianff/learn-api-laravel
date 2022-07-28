@@ -48,6 +48,14 @@ const Navigation = ({ user }) => {
                                 Books
                             </NavLink>
                         </div>
+                        {/* Categories Links */}
+                        <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                            <NavLink
+                                href="/categories"
+                                active={router.pathname === '/categories'}>
+                                Categories
+                            </NavLink>
+                        </div>
                     </div>
 
                     {/* Settings Dropdown */}
